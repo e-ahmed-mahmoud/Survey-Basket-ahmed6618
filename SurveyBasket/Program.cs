@@ -1,4 +1,6 @@
 using Scalar.AspNetCore;
+using SurveyBasket.Middlewares;
+using SurveyBasket.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<IPollService, PollService>();
 
 var app = builder.Build();
 
@@ -17,6 +21,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint( "/openapi/v1.json", "v1" ));
     app.MapScalarApiReference();
 }
+
+app.UseHttpDataLog();
 
 app.UseHttpsRedirection();
 
