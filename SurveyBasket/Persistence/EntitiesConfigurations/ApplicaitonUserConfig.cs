@@ -14,5 +14,29 @@ public class ApplicaitonUserConfig : IEntityTypeConfiguration<ApplicationUser>
         builder.Property(u => u.LastName).HasMaxLength(50).IsRequired();
 
         builder.OwnsMany(e => e.RefreshTokens).ToTable(name: "RefreshTokens").WithOwner().HasForeignKey("UserId");
+
+        //var passwordHasher = new PasswordHasher<ApplicationUser>();
+        builder.HasData(new ApplicationUser
+        {
+            Id = DefaultUsers.AdminId,
+            FirstName = "Admin",
+            LastName = "Default Account",
+            Email = DefaultUsers.AdminEmail,
+            NormalizedEmail = DefaultUsers.AdminEmail.ToUpper(),
+            UserName = DefaultUsers.AdminEmail,
+            NormalizedUserName = DefaultUsers.AdminEmail.ToUpper(),
+            EmailConfirmed = true,
+            //PasswordHash = passwordHasher.HashPassword(null!, DefaultUsers.AdminPassword),
+            PasswordHash = DefaultUsers.AdminPasswordHached,
+            PhoneNumber = "096873378763",
+            PhoneNumberConfirmed = true,
+            SecurityStamp = DefaultUsers.SecurityStamp,
+            ConcurrencyStamp = DefaultUsers.ConcurencyStamp,
+            AccessFailedCount = 0,
+            TwoFactorEnabled = false,
+            LockoutEnabled = false,
+            RefreshTokens = []
+
+        });
     }
 }

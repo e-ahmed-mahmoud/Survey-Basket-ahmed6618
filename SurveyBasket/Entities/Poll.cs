@@ -10,4 +10,8 @@ public sealed class Poll : AuditLogging
 
     public bool IsPublished { get; set; }
 
+    public ICollection<Question> Questions { get; set; } = [];
+
+    public ICollection<Vote> Votes { get; set; } = [];
+
 }

@@ -1,0 +1,13 @@
+{
+    "editor.unicodeHighlight.allowedLocales": {
+        "_os": false
+    },
+    "terminal.integrated.detectLocale": "off",
+    "editor.wordSegmenterLocales": [
+        "en-US"
+    ],
+    "github.copilot.chat.localeOverride": "en",
+    "typescript.locale": "en",
+    "terminal.integrated.localEchoStyle": "dim",
+    "files.defaultLanguage": "en-US"
+}

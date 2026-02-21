@@ -11,11 +11,12 @@ public class HttpDataLog
         _next = next;
     }
 
-    public async Task InvokeAsync (HttpContext httpContext)
+    public async Task InvokeAsync(HttpContext httpContext)
     {
 
-        _logger.LogInformation("Source {Source} path {path}",httpContext.Connection.RemoteIpAddress?.ToString(), httpContext.Request.Path );
-
+        _logger.LogInformation("Source {Source} path {path}", httpContext.Connection.RemoteIpAddress?.ToString(), httpContext.Request.Path);
+        //var pass = GeneratePasswordHasher.Generate(DefaultUsers.AdminPassword);
+        //_logger.LogInformation("hached password: {pass}", pass);
         await _next(httpContext);
     }
 
@@ -28,5 +29,5 @@ public static class HttpDataLogExtentions
     {
         return app.UseMiddleware<HttpDataLog>();
     }
-      
+
 }

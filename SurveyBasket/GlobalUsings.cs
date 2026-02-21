@@ -16,3 +16,7 @@ global using SurveyBasket.Contracts.Users;
 global using SurveyBasket.Persistence;
 global using SurveyBasket.Abstractions;
 global using SurveyBasket.Errors;
+global using SurveyBasket.Contracts.Votes;
+global using SurveyBasket.Extensions;
+global using SurveyBasket.Contracts.Dashboard;
+

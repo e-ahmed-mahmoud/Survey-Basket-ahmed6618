@@ -4,16 +4,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SurveyBasket.Abstractions.Const;
 
 namespace SurveyBasket.Authentication;
 
 public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
     private readonly JwtOptions _options = options.Value;
-    public (string token, int exporesIn) GenerateJWTToken(ApplicationUser user)
+    public (string token, int exporesIn) GenerateJWTToken(ApplicationUser user, IEnumerable<string> roles, IEnumerable<string> permissionsRoles)
     {
         //define claims, payload
         Claim[] claims = [
@@ -22,6 +24,8 @@ public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
             new (JwtRegisteredClaimNames.GivenName , user.FirstName),
             new (JwtRegisteredClaimNames.FamilyName , user.LastName),
             new (JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString()),
+            new (nameof(roles) , JsonSerializer.Serialize(roles), JsonClaimValueTypes.JsonArray),
+            new (PermissionsClaims.Type , JsonSerializer.Serialize(permissionsRoles),JsonClaimValueTypes.JsonArray)
         ];
         // define symattric security key
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));

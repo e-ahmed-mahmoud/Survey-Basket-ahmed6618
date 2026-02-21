@@ -1,4 +1,7 @@
 ﻿
+using SurveyBasket.Abstractions.Const;
+using SurveyBasket.Authentication.Authorization;
+
 namespace SurveyBasket.Controllers;
 
 [Route("api/[controller]")]
@@ -10,9 +13,16 @@ public class PollsController(IPollService pollService, IMapper mapper) : Control
     private readonly IMapper _mapper = mapper;
 
     [HttpGet("[action]")]
+    [HasPermission(policyName: PermissionsClaims.GetPolls)]
     public async Task<IActionResult> GetPolls(CancellationToken cancellationToken)
     {
         return Ok((await _pollService.GetAllPollsAsync(cancellationToken)).Value);
+    }
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetCurrentPolls(CancellationToken cancellationToken)
+    {
+        var polls = await _pollService.GetCurrentPollsAsync(cancellationToken);
+        return Ok(polls);
     }
 
     [HttpGet("[action]/{id}")]

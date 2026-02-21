@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace SurveyBasket.Persistence.EntitiesConfigurations;
 
-public class PollEntityConfiguration : IEntityTypeConfiguration<Poll>
+public class PollEntityConfig : IEntityTypeConfiguration<Poll>
 {
     public void Configure (EntityTypeBuilder<Poll> builder)
     {

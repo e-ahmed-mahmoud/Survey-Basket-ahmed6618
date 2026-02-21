@@ -1,10 +1,17 @@
 using System.Reflection;
 using System.Text;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using SurveyBasket.Authentication;
+using SurveyBasket.Authentication.Authorization;
+using SurveyBasket.Extensions.Emails;
+using SurveyBasket.Services.Dashboard;
+using SurveyBasket.Services.NotificaitonServices;
 using SurveyBasket.Services.UserServices;
+using SurveyBasket.Services.VoteService;
 
 namespace SurveyBasket;
 
@@ -22,6 +29,19 @@ public static class DependencyInjection
         services.AddCors(options => options.AddPolicy("AllowAll",
             builder => builder.WithOrigins(allowedOrigins!).AllowAnyMethod().AllowAnyHeader())); //WithOrigins("http://localhost:3000") for specific origins
 
+        services.AddHybridCache();
+
+        //configure Email Settings
+        services.Configure<EmailSettings>(configuration.GetSection(nameof(EmailSettings)));
+
+        //IdentityConfiguration 
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.SignIn.RequireConfirmedEmail = true;
+            options.User.RequireUniqueEmail = true;
+        });
+
         // Add services to the container.
         services.AddExceptionHandler<GlobalExceptionsHandler>();
         services.AddProblemDetails();
@@ -30,10 +50,17 @@ public static class DependencyInjection
         services.AddMapsterConfig();
         services.AddFluentValidationConfig();
         services.AddSwaggerAndOpenApi();
+        services.AddHttpContextAccessor();
+        services.AddHangfireConfig(configuration);
 
         services.AddScoped<IPollService, PollService>();
+        services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IAuthServices, AuthServices>();
-        services.AddScoped<IUserServices, UserServices>();
+        services.AddScoped<IVoteService, VoteService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<INotificaitonService, NotificaitonService>();
+        services.AddSingleton<IEmailSender, EmailService>();
+        services.AddScoped<IUserService, UserService>();
         return services;
     }
 
@@ -64,12 +91,15 @@ public static class DependencyInjection
     private static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration)
     {
 
-        services.AddIdentity<ApplicationUser, IdentityRole>()
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
         .AddApiEndpoints()
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 
         services.AddSingleton<IJwtProvider, JwtProvider>();
 
+        services.AddTransient<IAuthorizationHandler, PermissionAuthorizationPolicyHandler>();
+        services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
         //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName)
         .ValidateDataAnnotations().ValidateOnStart();
@@ -100,6 +130,19 @@ public static class DependencyInjection
             };
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddHangfireConfig(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(config => config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+
+        // Add the processing server as IHostedService
+        services.AddHangfireServer();
         return services;
     }
 }
