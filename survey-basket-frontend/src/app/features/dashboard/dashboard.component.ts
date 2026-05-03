@@ -11,8 +11,11 @@ import { RouterLink } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { PollsService } from '../../core/services/polls.service';
 import { DashboardService } from '../../core/services/dashboard.service';
-import { Poll, VotesPerDay, VotesPerAnswer } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
+import { Poll } from '../../shared/models/Polls/Poll';
+import { PollVotesSummary, VoteResponse, QuestionAnswerResponse } from '../../shared/models/Polls/PollVotesSummary';
+import { VotesPerAnswer } from '../../shared/models/Votes/VotesPerAnswer';
+import { VotesPerDay } from '../../shared/models/Votes/VotesPerDay';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,10 +42,12 @@ export class DashboardComponent implements OnInit {
   publishedCount = signal(0);
   totalPolls = signal(0);
   totalVotes = signal(0);
+  pollTitle = signal('');
 
   // Chart data signals
   votesPerDay = signal<VotesPerDay[]>([]);
   votesPerAnswer = signal<VotesPerAnswer[]>([]);
+  voteResponses = signal<VoteResponse[]>([]);
 
   // Chart configurations
   lineChartConfig = computed(() => this.buildLineChartConfig());
@@ -155,42 +160,70 @@ export class DashboardComponent implements OnInit {
   private loadChartData(pollId: number): void {
     this.chartLoading.set(true);
 
-    this.dashboardService.getVotesPerDay(pollId).subscribe({
-      next: (data) => this.votesPerDay.set(data),
-      error: () => {
-        this.votesPerDay.set([]);
-        this.chartLoading.set(false);
-      },
-    });
-
-    this.dashboardService.getVotesPerAnswer(pollId).subscribe({
+    this.dashboardService.getPollVotes(pollId).subscribe({
       next: (data) => {
-        this.votesPerAnswer.set(data);
-        this.calculateTotalVotes(data);
+        const responses = data.voteResponses ?? [];
+        this.pollTitle.set(data.title ?? '');
+        this.voteResponses.set(responses);
+        this.totalVotes.set(responses.length);
+        this.votesPerDay.set(this.buildVotesPerDay(responses));
+        this.votesPerAnswer.set(this.buildVotesPerAnswer(responses));
         this.chartLoading.set(false);
       },
       error: () => {
+        this.pollTitle.set('');
+        this.voteResponses.set([]);
+        this.totalVotes.set(0);
+        this.votesPerDay.set([]);
         this.votesPerAnswer.set([]);
         this.chartLoading.set(false);
       },
     });
   }
 
-  private calculateTotalVotes(votesPerAnswer: VotesPerAnswer[] | undefined): void {
-    let total = 0;
-    if (!votesPerAnswer || !Array.isArray(votesPerAnswer)) {
-      this.totalVotes.set(total);
-      return;
-    }
+  private buildVotesPerDay(responses: VoteResponse[]): VotesPerDay[] {
+    const dateMap = new Map<number, { date: string; votes: number }>();
 
-    votesPerAnswer.forEach((item) => {
-      if (item?.answers && Array.isArray(item.answers)) {
-        item.answers.forEach((answer) => {
-          total += answer?.count ?? 0;
-        });
+    responses.forEach((response) => {
+      if (!response?.voteDate) {
+        return;
       }
+
+      const voteDate = new Date(response.voteDate);
+      const dayKey = new Date(voteDate.getFullYear(), voteDate.getMonth(), voteDate.getDate()).getTime();
+      const label = voteDate.toLocaleDateString();
+
+      dateMap.set(dayKey, {
+        date: label,
+        votes: (dateMap.get(dayKey)?.votes ?? 0) + 1,
+      });
     });
-    this.totalVotes.set(total);
+
+    return Array.from(dateMap.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([, value]) => ({ date: value.date, votes: value.votes }));
+  }
+
+  private buildVotesPerAnswer(responses: VoteResponse[]): VotesPerAnswer[] {
+    const questionMap = new Map<string, Map<string, number>>();
+
+    responses.forEach((response) => {
+      response.questionAnswerResponses?.forEach((item) => {
+        if (!item?.questionContent) {
+          return;
+        }
+
+        const answer = item.selectedAnswer ?? 'No answer';
+        const answerMap = questionMap.get(item.questionContent) ?? new Map<string, number>();
+        answerMap.set(answer, (answerMap.get(answer) ?? 0) + 1);
+        questionMap.set(item.questionContent, answerMap);
+      });
+    });
+
+    return Array.from(questionMap.entries()).map(([questionTitle, answerMap]) => ({
+      questionTitle,
+      answers: Array.from(answerMap.entries()).map(([title, count]) => ({ title, count })),
+    }));
   }
 
   private buildLineChartConfig(): any {

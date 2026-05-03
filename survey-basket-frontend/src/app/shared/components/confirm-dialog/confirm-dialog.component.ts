@@ -14,22 +14,7 @@ interface ConfirmData {
   selector: 'app-confirm-dialog',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, MatIconModule],
-  template: `
-    <h2 mat-dialog-title class="confirm-title">
-      <mat-icon [color]="data.confirmColor ?? 'warn'">warning</mat-icon>
-      {{ data.title }}
-    </h2>
-    <mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="false" id="confirm-cancel">Cancel</button>
-      <button mat-raised-button [color]="data.confirmColor ?? 'warn'"
-        [mat-dialog-close]="true" id="confirm-ok">
-        {{ data.confirmText ?? 'Confirm' }}
-      </button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: "./confirm-dialog.component.html",
   styles: [`
     .confirm-title { display:flex; align-items:center; gap:10px; }
     mat-dialog-content p { font-size: 0.95rem; color: var(--text-secondary); }
@@ -39,5 +24,5 @@ export class ConfirmDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConfirmData,
     public dialogRef: MatDialogRef<ConfirmDialogComponent>
-  ) {}
+  ) { }
 }

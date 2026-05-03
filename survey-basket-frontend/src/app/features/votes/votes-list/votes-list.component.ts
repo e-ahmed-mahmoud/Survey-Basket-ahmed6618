@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { PollsService } from '../../../core/services/polls.service';
-import { Poll } from '../../../core/models';
+import { Poll } from '../../../shared/models/Polls/Poll';
 
 @Component({
   selector: 'app-votes-list',
@@ -36,7 +36,7 @@ import { Poll } from '../../../core/models';
               <h3>{{ poll.title }}</h3>
               <p>{{ poll.summary }}</p>
               <div class="vote-card-meta">
-                <span>Ends {{ poll.endsAt | date:'mediumDate' }}</span>
+                <span>Ends {{ poll.endAt | date:'mediumDate' }}</span>
               </div>
               <a mat-raised-button color="primary" [routerLink]="[poll.id, 'vote']"
                 [id]="'vote-btn-' + poll.id">

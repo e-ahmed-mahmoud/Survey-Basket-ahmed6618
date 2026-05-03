@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { RoleItem, RoleRequest } from '../models';
+import { RoleItem } from "../../shared/models/Auth/RoleItem";
+import { RoleRequest } from "../../shared/models/Auth/RoleRequest";
 
 @Injectable({ providedIn: 'root' })
 export class RolesService {
@@ -22,6 +23,6 @@ export class RolesService {
   }
 
   update(id: string, payload: RoleRequest): Observable<void> {
-    return this.http.put<void>(`${this.base}/Update/${id}`, payload);
+    return this.http.patch<void>(`${this.base}/Update/${id}`, payload);
   }
 }

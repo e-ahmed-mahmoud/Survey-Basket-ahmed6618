@@ -1,13 +1,14 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { AuthResponse } from '../models';
+import { AuthResponse } from "../../shared/models/Auth/AuthResponse";
 
 @Injectable({ providedIn: 'root' })
+
 export class TokenService {
-  private readonly _token = signal<string | null>(
-    sessionStorage.getItem('token')
+  private _token = signal<string | null>(
+    localStorage.getItem('token')
   );
   private readonly _refreshToken = signal<string | null>(
-    sessionStorage.getItem('refreshToken')
+    localStorage.getItem('refreshToken')
   );
 
   readonly accessToken = computed(() => this._token());
@@ -17,8 +18,8 @@ export class TokenService {
   setTokens(auth: AuthResponse): void {
     this._token.set(auth.token);
     this._refreshToken.set(auth.refreshToken);
-    sessionStorage.setItem('token', auth.token);
-    sessionStorage.setItem('refreshToken', auth.refreshToken);
+    localStorage.setItem('token', auth.token);
+    localStorage.setItem('refreshToken', auth.refreshToken);
   }
 
   updateAccessToken(accessToken: string): void {
@@ -28,12 +29,11 @@ export class TokenService {
   clearTokens(): void {
     this._token.set(null);
     this._refreshToken.set(null);
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('refreshToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
   }
 
   decodeToken(): Record<string, unknown> | null {
-    console.log(this._token());
     const token = this._token();
     if (!token) return null;
     try {
@@ -46,7 +46,6 @@ export class TokenService {
 
   getUserRoles(): string[] {
     const decoded = this.decodeToken();
-    console.log(decoded);
     if (!decoded) return [];
     const roles = decoded['roles'];
     if (Array.isArray(roles)) return roles;
@@ -55,7 +54,6 @@ export class TokenService {
   }
 
   hasRole(role: string): boolean {
-    console.log(this.getUserRoles());
     return this.getUserRoles().includes(role);
   }
 }

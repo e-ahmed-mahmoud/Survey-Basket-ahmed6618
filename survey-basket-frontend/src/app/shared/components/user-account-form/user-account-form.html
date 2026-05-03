@@ -1,0 +1,87 @@
+<div class="auth-form-panel">
+  <div class="auth-form-card">
+    <div class="form-header">
+      <h2>{{isEdit() ? "Edit": "Create" }} account</h2>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="name-row">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" id="reg-firstname" />
+          @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+          <mat-error>First name is required (min 2 chars)</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" id="reg-lastname" />
+          @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+          <mat-error>Last name is required (min 2 chars)</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      @if(!isEdit()){
+      <mat-form-field appearance="outline">
+        <mat-label>Email address</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput type="email" formControlName="email" id="reg-email" />
+        @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+        <mat-error>Email is required</mat-error>
+        }
+        @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+        <mat-error>Enter a valid email</mat-error>
+        }
+      </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>phone Number</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput type="text" formControlName="phoneNumber" id="reg-phoneNumber" />
+        @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
+        <mat-error>Mobile number is required</mat-error>
+        }
+        @if (form.get('phoneNumber')?.hasError('phoneNumber') && form.get('phoneNumber')?.touched) {
+        <mat-error>Enter a valid mobile number</mat-error>
+        }
+      </mat-form-field>
+      @if(!isEdit()){
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input matInput type="text" formControlName="password" id="reg-password" />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <mat-error>Password must be at least 6 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm password</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input matInput type="text" formControlName="confirmPassword" id="reg-confirm-password" />
+        @if (form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched) {
+        <mat-error>Passwords do not match</mat-error>
+        }
+      </mat-form-field>
+      }
+      <mat-form-field>
+        <mat-label>Select Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          @for (item of roles(); track $index) {
+            <mat-option value="{{item}}">{{item}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn"  (click)="onCancel()" id="user-cancel-btn" class="submit-btn" type="button" >Cancel</button>
+        <button mat-raised-button color="primary" type="submit" class="submit-btn" id="reg-submit"
+          [disabled]="loading()">
+          @if (loading()) { <mat-spinner diameter="20" /> }
+          @else {{{isEdit() ? "Update Account" : "Create Account"}}}
+        </button>
+      </mat-dialog-actions>
+    </form>
+  </div>
+</div>

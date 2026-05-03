@@ -5,7 +5,6 @@ public class DashboardService(ApplicationDbContext dbContext) : IDashboardServic
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
 
-
     public async Task<Result<PollVotesResponse>> GetPollVotesAsync(int pollId, CancellationToken cancellationToken)
     {
         var pollVotes = await _dbContext.Polls.Where(p => p.Id == pollId).AsNoTracking()
@@ -14,7 +13,8 @@ public class DashboardService(ApplicationDbContext dbContext) : IDashboardServic
             (
                 $"{v.User.FirstName} {v.User.LastName}",
                 VoteDate: v.SubmittedOn,
-                QuestionAnswerResponses: v.VoteAnswers.Select(a => new QuestionAnswerResponse(a.Answer.Content, a.Question.Content)))
+                QuestionAnswerResponses: v.VoteAnswers
+                .Select(a => new QuestionAnswerResponse(a.Question.Content, a.Answer.Content)).ToList())
             ))).SingleOrDefaultAsync(cancellationToken);
 
         return pollVotes is null ? Result.Failure<PollVotesResponse>(PollErrors.NotDefinedError) : Result.Success(pollVotes);

@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.surveybasket.com',
+  apiUrl: "",
   apiVersion: '1.0',
 };

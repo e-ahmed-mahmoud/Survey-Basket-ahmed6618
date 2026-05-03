@@ -65,7 +65,6 @@ export class ShellComponent {
   }
 
   get visibleNavItems(): NavItem[] {
-    console.log(this.navItems);
     if (this.isAdmin) {
       return this.navItems.filter((item) => (!item.adminOnly || this.isAdmin) && !item.memberOnly);
     }

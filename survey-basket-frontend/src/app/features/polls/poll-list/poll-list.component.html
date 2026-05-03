@@ -39,15 +39,15 @@
       </ng-container>
 
       <!-- Starts At -->
-      <ng-container matColumnDef="startsAt">
+      <ng-container matColumnDef="startAt">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Starts</th>
-        <td mat-cell *matCellDef="let poll">{{ poll.startsAt | date:'mediumDate' }}</td>
+        <td mat-cell *matCellDef="let poll">{{ poll.startAt | date:'mediumDate' }}</td>
       </ng-container>
 
       <!-- Ends At -->
-      <ng-container matColumnDef="endsAt">
+      <ng-container matColumnDef="endAt">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Ends</th>
-        <td mat-cell *matCellDef="let poll">{{ poll.endsAt | date:'mediumDate' }}</td>
+        <td mat-cell *matCellDef="let poll">{{ poll.endAt | date:'mediumDate' }}</td>
       </ng-container>
 
       <!-- Status -->

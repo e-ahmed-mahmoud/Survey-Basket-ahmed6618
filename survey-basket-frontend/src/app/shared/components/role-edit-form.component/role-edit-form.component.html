@@ -1,0 +1,28 @@
+<div class="auth-form-panel">
+    <div class="auth-form-card">
+        <div class="form-header">
+            <h2>{{isEdit() ? "Edit": "Create" }} Role</h2>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+            <div class=".name-row">
+                
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Role name</mat-label>
+                                    <input type="text" matInput formControlName="role"/>
+                                    @if (form.get('role')?.invalid && form.get('role')?.touched) {
+                                    <mat-error>role name is required (min 2 chars)</mat-error>
+                                    }
+                                </mat-form-field>
+            </div>
+                <mat-dialog-actions align="end">
+                    <button mat-raised-button color="warn" (click)="onCancel()" id="user-cancel-btn" class="submit-btn"
+                        type="button">Cancel</button>
+                    <button mat-raised-button color="primary" type="submit" class="submit-btn" id="reg-submit"
+                        [disabled]="loading()">
+                        @if (loading()) { <mat-spinner diameter="20" /> }
+                        @else {{{isEdit() ? "Update Role" : "Create Role"}}}
+                    </button>
+                </mat-dialog-actions>
+        </form>
+    </div>

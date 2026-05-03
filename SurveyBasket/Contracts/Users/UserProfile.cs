@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 
 namespace SurveyBasket.Contracts.Users;
 
-public record UserProfile(string FullName, string Email, string PhoneNumber, string UserName);
+public record UserProfile(string FirstName, string LastName, string Email, string PhoneNumber, string UserName);

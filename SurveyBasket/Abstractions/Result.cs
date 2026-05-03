@@ -32,5 +32,5 @@ public class Result<TValue> : Result
     {
         this._value = value;
     }
-    public TValue Value => IsSuccess ? _value : throw new InvalidOperationException("Cannot access the value of a failed result.");
+    public TValue Value => IsSuccess && base.Error == Error.None ? _value : throw new InvalidOperationException("Cannot access the value of a failed result.");
 }

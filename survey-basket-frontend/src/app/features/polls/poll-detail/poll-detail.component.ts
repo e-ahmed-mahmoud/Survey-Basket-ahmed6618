@@ -10,10 +10,10 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PollsService } from '../../../core/services/polls.service';
-import { Poll } from '../../../core/models';
+import { Poll } from '../../../shared/models/Polls/Poll';
+import { AuthService } from '../../../core/services/auth.service';
 import { PollFormDialogComponent } from '../poll-form-dialog/poll-form-dialog.component';
 import { QuestionsListComponent } from './questions-list/questions-list.component';
-import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-poll-detail',

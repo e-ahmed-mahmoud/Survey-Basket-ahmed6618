@@ -25,20 +25,20 @@
     <div class="date-row">
       <mat-form-field appearance="outline">
         <mat-label>Start date</mat-label>
-        <input matInput [matDatepicker]="startPicker" formControlName="startsAt" id="poll-starts" />
+        <input matInput [matDatepicker]="startPicker" formControlName="startAt" id="poll-starts" />
         <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
         <mat-datepicker #startPicker />
-        @if (form.get('startsAt')?.invalid && form.get('startsAt')?.touched) {
+        @if (form.get('startAt')?.invalid && form.get('startAt')?.touched) {
           <mat-error>Start date is required</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>End date</mat-label>
-        <input matInput [matDatepicker]="endPicker" formControlName="endsAt" id="poll-ends" />
+        <input matInput [matDatepicker]="endPicker" formControlName="endAt" id="poll-ends" />
         <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
         <mat-datepicker #endPicker />
-        @if (form.get('endsAt')?.invalid && form.get('endsAt')?.touched) {
+        @if (form.get('endAt')?.invalid && form.get('endAt')?.touched) {
           <mat-error>End date is required</mat-error>
         }
       </mat-form-field>

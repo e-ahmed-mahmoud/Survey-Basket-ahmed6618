@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserListItem, UserCreateRequest, UserUpdateRequest } from '../models';
+import { UserListItem } from "../../shared/models/UserListItem";
+import { UserUpdateRequest } from "../../shared/models/Account/UserUpdateRequest";
+import { UserCreateRequest } from "../../shared/models/Account/UserCreateRequest";
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
@@ -22,6 +24,10 @@ export class UsersService {
   }
 
   update(id: string, payload: UserUpdateRequest): Observable<void> {
-    return this.http.put<void>(`${this.base}/Update/${id}`, payload);
+    return this.http.patch<void>(`${this.base}/Update/${id}`, payload);
+  }
+
+  DeActiveUser(userId: string) {
+    return this.http.get(`${this.base}/DeActiveUser/${userId}`);
   }
 }

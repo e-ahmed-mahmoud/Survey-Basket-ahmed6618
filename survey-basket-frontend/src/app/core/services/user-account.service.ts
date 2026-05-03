@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AccountInfo, UpdateAccountRequest, ChangePasswordRequest } from '../models';
+import { UpdateAccountRequest } from "../../shared/models/Account/UpdateAccountRequest";
+import { ChangePasswordRequest } from "../../shared/models/Account/ChangePasswordRequest";
+import { AccountInfo } from "../../shared/models/Account/AccountInfo";
 
 @Injectable({ providedIn: 'root' })
 export class UserAccountService {

@@ -9,9 +9,9 @@ import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from
 import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { InitService } from '../services/init.service';
 
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
-let isRefreshing = false;
 
 function addBearerToken(req: HttpRequest<unknown>, token: string | null): HttpRequest<unknown> {
   if (!token) return req;
@@ -20,61 +20,33 @@ function addBearerToken(req: HttpRequest<unknown>, token: string | null): HttpRe
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
-  const authService = inject(AuthService);
+  //const authService = inject(AuthService);
   const router = inject(Router);
 
-  const authedReq = addBearerToken(req, tokenService.accessToken());
+  const token = tokenService.accessToken();
+  const initService = inject(InitService);
 
-  return next(authedReq).pipe(
+  if (!initService.isReady()) {
+    return next(req); // skip auth until ready
+  }
+  const clonedRequest = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+
+  return next(clonedRequest).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('Auth/Login') && !req.url.includes('Auth/RefreshAuth')) {
-        return handleUnauthorized(req, next, tokenService, authService, router);
+      if (shouldHandle401(error, req)) {
+        inject(MatSnackBar).open("Not Authenticated User");
+        router.navigateByUrl('/auth/login')
       }
       return throwError(() => error);
     })
   );
 };
 
-function handleUnauthorized(
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn,
-  tokenService: TokenService,
-  authService: AuthService,
-  router: Router
-) {
-  if (!isRefreshing) {
-    isRefreshing = true;
-    refreshTokenSubject.next(null);
-
-    const refreshToken = tokenService.refreshToken();
-    const accessToken = tokenService.accessToken();
-
-    if (!refreshToken || !accessToken) {
-      isRefreshing = false;
-      tokenService.clearTokens();
-      router.navigate(['/auth/login']);
-      return throwError(() => new Error('No tokens available'));
-    }
-
-    return authService.refreshToken({ token: accessToken, refreshToken }).pipe(
-      switchMap((response) => {
-        isRefreshing = false;
-        tokenService.setTokens(response);
-        refreshTokenSubject.next(response.token);
-        return next(addBearerToken(req, response.token));
-      }),
-      catchError((err) => {
-        isRefreshing = false;
-        tokenService.clearTokens();
-        router.navigate(['/auth/login']);
-        return throwError(() => err);
-      })
-    );
-  }
-
-  return refreshTokenSubject.pipe(
-    filter((token) => token !== null),
-    take(1),
-    switchMap((token) => next(addBearerToken(req, token)))
+function shouldHandle401(error: HttpErrorResponse, req: HttpRequest<unknown>): boolean {
+  return (
+    error.status === 401 &&
+    !req.url.includes('Auth/Login') &&
+    !req.url.includes('Auth/RefreshAuth')
   );
 }
+

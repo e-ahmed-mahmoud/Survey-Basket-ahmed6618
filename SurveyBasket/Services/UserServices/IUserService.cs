@@ -11,6 +11,7 @@ public interface IUserService
     Task<Result<UserProfile>> GetAccountInfoAsync(string Id);
 
     Task<Result> UpdateUserAccountAsync(UpdateAccountRequest request, string userId);
+    Task<Result> DeActiveUserAccountAsync(string userId);
 
     Task<Result> ChangePasswordAsync(string userId, ChangePasswordRequest request);
 

@@ -1,18 +1,18 @@
 import { Component, inject, signal, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialogActions } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PollsService } from '../../../core/services/polls.service';
-import { Poll } from '../../../core/models';
+import { Poll } from '../../../shared/models/Polls/Poll';
 
 interface DialogData {
   poll: Poll | null;
@@ -25,8 +25,9 @@ interface DialogData {
     CommonModule, ReactiveFormsModule,
     MatDialogModule, MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule, MatDatepickerModule,
-    MatNativeDateModule, MatSlideToggleModule, MatProgressSpinnerModule,
+    MatNativeDateModule, MatSlideToggleModule, MatProgressSpinnerModule, MatDialogActions
   ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './poll-form-dialog.component.html',
   styleUrls: ['./poll-form-dialog.component.scss'],
 })
@@ -42,25 +43,28 @@ export class PollFormDialogComponent {
   title = this.isEdit ? 'Edit Poll' : 'New Poll';
 
   form = this.fb.nonNullable.group({
-    title:       [this.data.poll?.title ?? '', [Validators.required, Validators.minLength(3)]],
-    summary:     [this.data.poll?.summary ?? '', [Validators.required, Validators.minLength(5)]],
+    title: [this.data.poll?.title ?? '', [Validators.required, Validators.minLength(3)]],
+    summary: [this.data.poll?.summary ?? '', [Validators.required, Validators.minLength(5)]],
     isPublished: [this.data.poll?.isPublished ?? false],
-    startsAt:    [this.data.poll?.startsAt ? new Date(this.data.poll.startsAt) : new Date() as any, Validators.required],
-    endsAt:      [this.data.poll?.endsAt ? new Date(this.data.poll.endsAt) : null as any, Validators.required],
+    startAt: [this.data.poll?.startAt ? new Date(this.data.poll.startAt) : new Date() as any, Validators.required],
+    endAt: [this.data.poll?.endAt ? new Date(this.data.poll.endAt) : null as any, Validators.required],
   });
 
   onSubmit(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched(); return;
+    }
     this.loading.set(true);
-
+    console.log(this.form.value);
     const raw = this.form.getRawValue();
     const payload = {
-      title:       raw.title,
-      summary:     raw.summary,
+      title: raw.title,
+      summary: raw.summary,
       isPublished: raw.isPublished,
-      startsAt:    new Date(raw.startsAt).toISOString(),
-      endsAt:      new Date(raw.endsAt).toISOString(),
+      startAt: new Date(raw.startAt).toISOString().split('T')[0],
+      endAt: new Date(raw.endAt).toISOString().split('T')[0],
     };
+    console.log(payload);
 
     const req$: import('rxjs').Observable<unknown> = this.isEdit
       ? this.pollsService.updatePoll(this.data.poll!.id, payload)

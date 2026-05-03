@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -7,6 +7,8 @@ import { routes } from './app.routes';
 import { apiVersionInterceptor } from './core/interceptors/api-version.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { lastValueFrom } from 'rxjs';
+import { InitService } from './core/services/init.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +22,11 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: { duration: 4000, horizontalPosition: 'right', verticalPosition: 'top' },
     },
+    provideAppInitializer(() => lastValueFrom(
+      inject(InitService).init()).finally(() => {
+        const div = document.getElementById('initialLoad')
+        div && div.remove();
+      })
+    )
   ],
 };

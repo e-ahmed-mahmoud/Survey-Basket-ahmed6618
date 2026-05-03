@@ -16,10 +16,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { PollsService } from '../../../core/services/polls.service';
-import { Poll } from '../../../core/models';
 import { PollFormDialogComponent } from '../poll-form-dialog/poll-form-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { Poll } from '../../../shared/models/Polls/Poll';
 
 @Component({
   selector: 'app-poll-list',
@@ -46,7 +46,7 @@ export class PollListComponent implements OnInit {
 
   loading = signal(true);
   dataSource = new MatTableDataSource<Poll>([]);
-  displayedColumns = ['title', 'summary', 'startsAt', 'endsAt', 'isPublished', 'actions'];
+  displayedColumns = ['title', 'summary', 'startAt', 'endAt', 'isPublished', 'actions'];
 
   ngOnInit(): void {
     this.loadPolls();
@@ -56,6 +56,7 @@ export class PollListComponent implements OnInit {
     this.loading.set(true);
     this.pollsService.getPolls().subscribe({
       next: (polls) => {
+        console.log(polls);
         this.dataSource.data = polls;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;

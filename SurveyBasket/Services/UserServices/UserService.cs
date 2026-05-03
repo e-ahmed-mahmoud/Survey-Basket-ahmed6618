@@ -1,10 +1,5 @@
-using System.Text;
-using Hangfire;
+using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.WebUtilities;
-using Org.BouncyCastle.Ocsp;
-using SurveyBasket.Abstractions.Const;
-using SurveyBasket.Extensions.Emails;
 
 namespace SurveyBasket.Services.UserServices;
 
@@ -51,17 +46,20 @@ public class UserService(UserManager<ApplicationUser> userManager, IEmailSender 
 
     public async Task<IEnumerable<UserResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await (from u in _dbContext.Users
-                      join ur in _dbContext.UserRoles
-                      on u.Id equals ur.UserId
-                      join r in _dbContext.Roles
-                      on ur.RoleId equals r.Id into roles
-                      where roles.Any(r => r.Name != DefaultRoles.Member)
-                      select new { u.Id, u.FirstName, u.LastName, u.Email, u.IsDisabled, Roles = roles.Select(r => r.Name).ToList() })
-                           .GroupBy(u => new { u.Id, u.FirstName, u.LastName, u.Email, u.IsDisabled })
+        var res = await (from u in _dbContext.Users
+                         where !u.IsDisabled
+                         join ur in _dbContext.UserRoles
+                         on u.Id equals ur.UserId
+                         join r in _dbContext.Roles
+                         on ur.RoleId equals r.Id into roles
+                         //where roles.Any(r => r.Name != DefaultRoles.Member)
+                         select new { u.Id, u.FirstName, u.LastName, u.Email, u.PhoneNumber, u.IsDisabled, Roles = roles.Select(r => r.Name).ToList() })
+                           .GroupBy(u => new { u.Id, u.FirstName, u.LastName, u.Email, u.IsDisabled, u.PhoneNumber })
                            .Select(u => new UserResponse(u.Key.Id, u.Key.FirstName, u.Key.LastName,
-                               u.Key.Email, u.Key.IsDisabled, u.SelectMany(r => r.Roles)))
+                               u.Key.Email, u.Key.PhoneNumber, u.Key.IsDisabled, u.SelectMany(r => r.Roles)))
                            .ToListAsync(cancellationToken);
+
+        return res;
     }
 
     public async Task<Result<UserResponse>> GetByIdAsync(string id)
@@ -129,5 +127,17 @@ public class UserService(UserManager<ApplicationUser> userManager, IEmailSender 
 
         var error = userRes.Errors.First();
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+    }
+
+    public async Task<Result> DeActiveUserAccountAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Result.Failure(AuthErrors.UserNotDefined);
+
+        user.RefreshTokens.RemoveAll(t => t.IsActive);
+        user.IsDisabled = true;
+        var res = await _userManager.UpdateAsync(user);
+        return res.Succeeded ? Result.Success() : Result.Failure(AuthErrors.UserNotDefined);
     }
 }

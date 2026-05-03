@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Poll, PollRequest } from '../models';
+import { Poll } from '../../shared/models/Polls/Poll';
+import { PollRequest } from '../../shared/models/Polls/PollRequest';
 
 @Injectable({ providedIn: 'root' })
 export class PollsService {

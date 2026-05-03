@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SurveyBasket.Abstractions.Const;
 using SurveyBasket.Contracts.Roles;
 
@@ -39,7 +35,7 @@ public class RoleService(RoleManager<ApplicationRole> roleManager, ApplicationDb
             return Result.Failure<RoleDetialsResponse>(RoleError.DuplicatedRole);
 
         var rolesClaims = _dbContext.RoleClaims.Select(c => c.ClaimValue);
-        if (request.Permissions.Except(rolesClaims).Any())
+        if (request.Permissions != null && request.Permissions.Except(rolesClaims).Any())
             return Result.Failure<RoleDetialsResponse>(RoleError.PermissionNotDefined);
 
         var roleRes = await _roleManager.CreateAsync(new ApplicationRole
@@ -51,16 +47,18 @@ public class RoleService(RoleManager<ApplicationRole> roleManager, ApplicationDb
         if (roleRes.Succeeded)
         {
             var role = await _roleManager.FindByNameAsync(request.Name);
-            var permissions = request.Permissions.Select(p => new IdentityRoleClaim<string>()
+            var permissions = request?.Permissions?.Select(p => new IdentityRoleClaim<string>()
             {
                 ClaimValue = p,
                 RoleId = role!.Id,
                 ClaimType = PermissionsClaims.Type
             }).ToList();
-            await _dbContext.AddRangeAsync(permissions);
+            if (permissions != null)
+                await _dbContext.AddRangeAsync(permissions);
+
             await _dbContext.SaveChangesAsync();
 
-            var result = new RoleDetialsResponse(role!.Id, role!.Name!, role.IsDeleted, request.Permissions);
+            var result = new RoleDetialsResponse(role!.Id, role!.Name!, role.IsDeleted, request?.Permissions!);
             return Result.Success(result);
         }
         var error = roleRes.Errors.First();

@@ -9,9 +9,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { QuestionsService } from '../../../../core/services/questions.service';
-import { Question, PaginationFilter } from '../../../../core/models';
+import { PaginationFilter } from '../../../../shared/models/PaginatedList';
+import { Question } from '../../../../shared/models/Questions/Question';
 import { AuthService } from '../../../../core/services/auth.service';
+import { QuestionsService } from '../../../../core/services/questions.service';
 
 @Component({
     selector: 'app-questions-list',
@@ -53,19 +54,15 @@ export class QuestionsListComponent implements OnInit {
 
         this.questionsService.getAll(this.pollId(), filter).subscribe({
             next: (data) => {
-                console.log('Loaded questions:', data.items);
-                console.log(data.items);
                 this.questions.set(data.items);
                 this.totalCount.set(data.totalCount);
                 this.loading.set(false);
-                console.log(this.questions());
             },
             error: () => {
                 this.loading.set(false);
                 this.snackBar.open('Failed to load questions', 'OK', { panelClass: ['snack-error'] });
             },
         });
-        console.log(this.questions());
     }
 
     onPageChange(event: PageEvent): void {

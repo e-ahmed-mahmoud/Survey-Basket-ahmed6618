@@ -44,7 +44,7 @@
         <mat-icon>how_to_vote</mat-icon>
       </div>
       <div class="stat-info">
-        <div class="stat-value">—</div>
+        <div class="stat-value">{{ totalVotes() }}</div>
         <div class="stat-label">Total Votes</div>
       </div>
     </div>
@@ -62,7 +62,7 @@
       <a [routerLink]="['/polls', poll.id]" class="poll-row">
         <div class="poll-row-info">
           <span class="poll-row-title">{{ poll.title }}</span>
-          <span class="poll-row-date">{{ poll.startsAt | date:'mediumDate' }}</span>
+          <span class="poll-row-date">{{ poll.startAt | date:'mediumDate' }}</span>
         </div>
         @if(isAdminOnly()) {
         <span class="status-chip" [class.published]="poll.isPublished" [class.draft]="!poll.isPublished">
@@ -81,7 +81,10 @@
   <div class="charts-section">
     <!-- Poll selector -->
     <div class="charts-header">
-      <h2>Analytics</h2>
+      <div>
+        <h2>Analytics</h2>
+        @if (pollTitle()) { <p class="chart-subtitle">{{ pollTitle() }}</p> }
+      </div>
       <mat-form-field appearance="outline" class="poll-selector">
         <mat-label>Select Poll</mat-label>
         <mat-select [value]="selectedPollId()" (selectionChange)="selectedPollId.set($event.value)">
@@ -148,6 +151,31 @@
         <span class="stat-label">Questions</span>
         <span class="stat-value">{{ votesPerAnswer().length }}</span>
       </div>
+    </div>
+
+    <div class="sb-card response-card">
+      <h3>Latest Responses</h3>
+      @if (voteResponses().length > 0) {
+      <div class="responses-list">
+        @for (response of voteResponses(); track response.voteDate) {
+        <div class="response-row">
+          <div class="response-meta">
+            <span class="response-name">{{ response.voterName || 'Anonymous' }}</span>
+            <span class="response-date">{{ response.voteDate | date:'medium' }}</span>
+          </div>
+          <ul class="response-answers">
+            @for (answer of response.questionAnswerResponses; track answer.questionContent) {
+            <li>
+              <strong>{{ answer.questionContent }}</strong> — {{ answer.selectedAnswer }}
+            </li>
+            }
+          </ul>
+        </div>
+        }
+      </div>
+      } @else {
+      <p class="no-data-msg">No vote responses yet.</p>
+      }
     </div>
     }
   </div>

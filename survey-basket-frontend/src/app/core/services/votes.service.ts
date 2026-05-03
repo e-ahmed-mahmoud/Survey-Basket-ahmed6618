@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PollQuestion, VoteRequest } from '../models';
+import { PollQuestion } from '../../shared/models/Polls/PollQuestion';
+import { VoteRequest } from '../../shared/models/Votes/VoteRequest';
 
 @Injectable({ providedIn: 'root' })
 export class VotesService {
@@ -15,9 +16,6 @@ export class VotesService {
   }
 
   submitVote(pollId: number, payload: VoteRequest): Observable<void> {
-    console.log(payload);
-    console.log(pollId);
-    debugger;
     return this.http.post<void>(`${this.base(pollId)}/SubmitVote`, payload);
   }
 }

@@ -47,4 +47,12 @@ public class UsersController(IUserService userService) : ControllerBase
 
         return result.IsSuccess ? NoContent() : result.ToProblem(result.Error.StatusCode);
     }
+
+    [HttpGet("[action]/{userId}")]
+    [HasPermission(PermissionsClaims.AddUsers)]
+    public async Task<IActionResult> DeActiveUser([FromRoute] string userId)
+    {
+        var result = await _userService.DeActiveUserAccountAsync(userId);
+        return result.IsSuccess ? NoContent() : result.ToProblem(400);
+    }
 }

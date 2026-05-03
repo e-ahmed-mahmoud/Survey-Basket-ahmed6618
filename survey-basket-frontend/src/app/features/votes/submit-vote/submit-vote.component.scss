@@ -1,0 +1,41 @@
+    .vote-page {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .question-card {
+        margin-bottom: 20px;
+    }
+
+    .question-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 16px;
+    }
+
+    .answers-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .answer-option {
+        ::ng-deep .mdc-form-field {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.15s;
+
+            &:hover {
+                background: var(--page-bg);
+            }
+        }
+    }
+
+    .submit-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }

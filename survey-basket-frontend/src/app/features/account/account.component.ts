@@ -11,7 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserAccountService } from '../../core/services/user-account.service';
 import { AuthService } from '../../core/services/auth.service';
-import { AccountInfo } from '../../core/models';
+import { AccountInfo } from "../../shared/models/Account/AccountInfo";
 
 @Component({
   selector: 'app-account',
@@ -39,12 +39,12 @@ export class AccountComponent implements OnInit {
 
   profileForm = this.fb.nonNullable.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
-    lastName:  ['', [Validators.required, Validators.minLength(2)]],
+    lastName: ['', [Validators.required, Validators.minLength(2)]],
   });
 
   passwordForm = this.fb.nonNullable.group({
-    currentPassword:    ['', Validators.required],
-    newPassword:        ['', [Validators.required, Validators.minLength(6)]],
+    currentPassword: ['', Validators.required],
+    newPassword: ['', [Validators.required, Validators.minLength(6)]],
     confirmNewPassword: ['', Validators.required],
   });
 

@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Question, QuestionRequest, PaginatedList, PaginationFilter } from '../models';
+import { PaginatedList, PaginationFilter } from "../../shared/models/PaginatedList";
+import { Question } from '../../shared/models/Questions/Question';
+import { QuestionRequest } from '../../shared/models/Questions/QuestionRequest';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionsService {

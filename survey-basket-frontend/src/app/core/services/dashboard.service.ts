@@ -2,7 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PollVotesSummary, VotesPerDay, VotesPerAnswer } from '../models';
+import { PollVotesSummary } from '../../shared/models/Polls/PollVotesSummary';
+import { VotesPerAnswer } from '../../shared/models/Votes/VotesPerAnswer';
+import { VotesPerDay } from '../../shared/models/Votes/VotesPerDay';
+
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {

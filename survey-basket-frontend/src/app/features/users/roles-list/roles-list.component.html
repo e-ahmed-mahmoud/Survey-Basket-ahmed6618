@@ -6,7 +6,7 @@
           <p class="page-subtitle">Manage system roles and permissions</p>
         </div>
         <div class="header-actions">
-          <button mat-raised-button color="primary" id="add-role-btn">
+          <button mat-raised-button color="primary" id="add-role-btn" (click)="onAddRole()">
             <mat-icon>add</mat-icon> Add Role
           </button>
         </div>
@@ -29,7 +29,9 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let r">
-              <button mat-icon-button [id]="'edit-role-' + r.id"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button [id]="'edit-role-' + r.id" (click)="onEditRole(r)">
+                <mat-icon>edit</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="cols"></tr>
