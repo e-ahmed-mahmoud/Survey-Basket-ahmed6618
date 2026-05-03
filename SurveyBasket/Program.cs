@@ -2,7 +2,6 @@ using Hangfire;
 using HangfireBasicAuthenticationFilter;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
 using SurveyBasket;
@@ -23,7 +22,7 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 // Seed the database
-await app.SeedDatabaseAsync();
+//await app.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
