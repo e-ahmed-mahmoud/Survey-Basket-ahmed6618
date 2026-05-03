@@ -1,222 +1,154 @@
-# 🧺 Survey Basket System
+# 🛒 Survey Basket API
 
-A full-stack **Survey & Poll Management System** built with **ASP.NET Core (Backend)** and **Angular (Frontend)**, designed to handle dynamic surveys, voting, analytics, and user management with a clean and scalable architecture.
-
----
-
-## 🚀 Overview
-
-Survey Basket enables organizations to:
-
-* Create and manage surveys (polls)
-* Add dynamic questions with multiple answers
-* Collect and analyze votes
-* Manage users and roles
-* Visualize insights through dashboards
-
-The system follows modern best practices in both backend and frontend development, ensuring scalability, maintainability, and performance.
+A scalable **ASP.NET Core Web API** built using **Clean Architecture principles**, designed for managing surveys, polls, users, and voting systems.
 
 ---
 
-## 🏗️ Architecture
+## 🚀 Features
 
-### 🔙 Backend (ASP.NET Core)
-
-* RESTful API with OpenAPI (Swagger)
-* JWT Authentication + Refresh Tokens
-* Role-Based Authorization
-* Entity Framework Core
-* API Versioning (`x-api-version`)
-* Modular feature-based structure
-
-### 🎨 Frontend (Angular 21)
-
-* Standalone Components (No NgModules)
-* Angular Material UI
-* Feature-based architecture
-* Reactive Forms
-* HTTP Interceptors (Auth + Error handling)
-* Signals + RxJS
-* Lazy Loading
+* 🔐 Authentication & Authorization (JWT + Refresh Tokens)
+* 👥 User & Role Management
+* 📊 Polls & Voting System
+* ✅ Validation using FluentValidation
+* 🧠 Clean Architecture (Core / Infrastructure / API)
+* ⚡ Result Pattern for consistent responses
+* 🧩 Modular & maintainable design
 
 ---
 
-## 📦 Features
+## 🏗 Architecture
 
-### 🔐 Authentication & Security
+The project follows **Clean Architecture** with clear separation of concerns:
 
-* User Registration & Login
-* Email Confirmation
-* Forgot / Reset Password
-* JWT + Refresh Token Flow
-* Role-Based Access Control (RBAC)
+### 🔹 Core Layer
 
-### 📊 Poll Management
+* Domain Entities
+* Value Objects
+* Application DTOs
+* Interfaces (Contracts)
+* Business Logic
+* Validation Rules
 
-* Create, Update, Delete Polls
-* Publish / Unpublish Polls
-* Schedule Polls (Start / End Date)
+### 🔹 Infrastructure Layer
 
-### ❓ Questions Management
+* Entity Framework Core (DbContext)
+* Fluent API Configurations
+* Identity (UserManager, Roles)
+* JWT Authentication
+* External Services
 
-* Add / Edit / Delete Questions
-* Multiple Answers Support
-* Pagination, Searching, Sorting
+### 🔹 API Layer
 
-### 🗳️ Voting System
-
-* Submit Votes per Poll
-* Prevent invalid submissions
-* Structured vote payload handling
-
-### 📈 Dashboard & Analytics
-
-* Total Votes per Poll
-* Votes per Day
-* Votes per Answer (distribution)
-
-### 👥 User & Role Management
-
-* Manage Users
-* Assign Roles
-* Update User Information
+* Controllers
+* Middleware
+* Dependency Injection
+* Endpoints
 
 ---
 
-## 🛠️ Tech Stack
+## 📂 Project Structure
 
-### Backend
+```
+src/
+├── Core/
+│   ├── Domain/
+│   ├── Application/
+│
+├── Infrastructure/
+│   ├── Persistence/
+│   ├── Identity/
+│   ├── Services/
+│
+├── API/
+│   ├── Controllers/
+│   ├── Extensions/
+```
 
-* ASP.NET Core Web API
+---
+
+## 🛠 Technologies
+
+* ASP.NET Core
 * Entity Framework Core
 * SQL Server
 * JWT Authentication
-* Swagger / OpenAPI
-
-### Frontend
-
-* Angular 21.2.4
-* Angular Material
-* RxJS + Signals
-* SCSS
-
----
-
-## ⚙️ Getting Started
-
-### 🔧 Prerequisites
-
-* .NET 10 SDK
-* Node.js (>= 18)
-* Angular CLI
-* SQL Server
-
----
-
-### ▶️ Backend Setup
-
-```bash
-cd backend
-dotnet restore
-dotnet ef database update
-dotnet run
-```
-
-API will run at:
-
-```
-https://localhost:5001
-```
-
-Swagger:
-
-```
-https://localhost:5001/swagger
-```
-
----
-
-### ▶️ Frontend Setup
-
-```bash
-cd frontend
-npm install
-ng serve
-```
-
-App will run at:
-
-```
-http://localhost:61933
-```
+* FluentValidation
+* Mapster
+* Clean Architecture
 
 ---
 
 ## 🔐 Authentication Flow
 
-1. User logs in → receives:
+* Login returns:
 
-   * Access Token
-   * Refresh Token
-2. Access token is sent in:
-
-```
-Authorization: Bearer {token}
-```
-
-3. Refresh token used automatically when expired
+  * Access Token (JWT)
+  * Refresh Token
+* Access token is used for API requests
+* Refresh token is used to renew expired access tokens
 
 ---
 
-## 📡 API Notes
+## ⚙️ Getting Started
 
-* All endpoints require header:
+### 1. Clone the repository
 
+```bash
+git clone https://github.com/e-ahmed-mahmoud/Survey-Basket-ahmed6618.git
+cd Survey-Basket-ahmed6618
 ```
-x-api-version: 1.0
-```
-
-* Protected endpoints require JWT Bearer Token
 
 ---
 
-## 📊 Example Modules
+### 2. Update Connection String
 
-| Module    | Description                     |
-| --------- | ------------------------------- |
-| Auth      | Login, Register, Token handling |
-| Polls     | Manage surveys                  |
-| Questions | Manage poll questions           |
-| Votes     | Submit and process votes        |
-| Dashboard | Analytics and reporting         |
-| Users     | Admin user management           |
+In `appsettings.json`:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "your_sql_server_connection"
+}
+```
 
 ---
 
+### 3. Run Migrations
 
-## 🔒 Security Considerations
+```bash
+dotnet ef database update
+```
 
-* JWT secured endpoints
-* Role-based authorization
-* Input validation
-* Secure password handling
-* Token refresh strategy
+---
+
+### 4. Run the project
+
+```bash
+dotnet run
+```
+
+---
+
+## 📬 API Documentation
+
+Swagger available at:
+
+```
+https://localhost:<port>/swagger
+```
+
+---
+
+## 🧠 Design Decisions
+
+* No Generic Repository (to avoid unnecessary abstraction)
+* Direct query projection for performance
+* Separation between business logic and infrastructure
+* DTO-based communication between layers
 
 ---
 
 ## 👨‍💻 Author
 
 Ahmed Mahmoud
-📧 [ahmed.mahmoud.6618@gmail.com](mailto:ahmed.mahmoud.6618@gmail.com)
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-## ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub!
+mailto:ahmed.mahmoud.6618@gmail.com
